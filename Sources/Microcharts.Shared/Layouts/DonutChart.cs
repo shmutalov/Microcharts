@@ -23,27 +23,32 @@ namespace Microcharts
         /// <value>The hole radius.</value>
         public float HoleRadius { get; set; } = 0;
 
+        private List<Entry> _entries;
+        private float _sum;
+
         #endregion
 
         #region Methods
 
+        /// <inheritdoc />
         public override void DrawContent(SKCanvas canvas, int width, int height)
         {
-            this.DrawCaption(canvas, width, height);
+            _entries = Entries.ToList();
+            _sum = _entries.Sum(x => x.AbsValue);
+
             using (new SKAutoCanvasRestore(canvas))
             {
-                canvas.Translate(width / 2, height / 2);
-                var sumValue = this.Entries.Sum(x => Math.Abs(x.Value));
-                var radius = (Math.Min(width, height) - (2 * Margin)) / 2;
+                canvas.Translate(width / 2f, height / 2f);
+                
+                var radius = (Math.Min(width, height) - (2f * Margin)) / 2f;
 
                 var start = 0.0f;
-                for (int i = 0; i < this.Entries.Count(); i++)
+                foreach (var entry in _entries)
                 {
-                    var entry = this.Entries.ElementAt(i);
-                    var end = start + (Math.Abs(entry.Value) / sumValue);
+                    var end = start + (entry.AbsValue / _sum);
 
                     // Sector
-                    var path = RadialHelpers.CreateSectorPath(start, end, radius, radius * this.HoleRadius);
+                    var path = RadialHelpers.CreateSectorPath(start, end, radius, radius * HoleRadius);
                     using (var paint = new SKPaint
                     {
                         Style = SKPaintStyle.Fill,
@@ -57,35 +62,33 @@ namespace Microcharts
                     start = end;
                 }
             }
+
+            DrawCaption(canvas, width, height);
         }
 
+        /// <summary>
+        /// Draw chart legend
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         private void DrawCaption(SKCanvas canvas, int width, int height)
         {
-            var sumValue = this.Entries.Sum(x => Math.Abs(x.Value));
             var rightValues = new List<Entry>();
             var leftValues = new List<Entry>();
 
-            int i = 0;
-            var current = 0.0f;
-            while (i < this.Entries.Count() && (current < sumValue / 2))
+            for (var i = 0; i < _entries.Count / 2; i++)
             {
-                var entry = this.Entries.ElementAt(i);
-                rightValues.Add(entry);
-                current += Math.Abs(entry.Value);
-                i++;
+                rightValues.Add(_entries[i]);
             }
 
-            while (i < this.Entries.Count())
+            for (var i = _entries.Count - 1; i >= _entries.Count / 2; i--)
             {
-                var entry = this.Entries.ElementAt(i);
-                leftValues.Add(entry);
-                i++;
+                leftValues.Add(_entries[i]);
             }
 
-            leftValues.Reverse();
-
-            this.DrawCaptionElements(canvas, width, height, rightValues, false);
-            this.DrawCaptionElements(canvas, width, height, leftValues, true);
+            DrawCaptionElements(canvas, width, height, rightValues, false);
+            DrawCaptionElements(canvas, width, height, leftValues, true);
         }
 
         #endregion

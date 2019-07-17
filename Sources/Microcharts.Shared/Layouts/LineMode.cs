@@ -3,10 +3,24 @@
 
 namespace Microcharts
 {
+    /// <summary>
+    /// 
+    /// </summary>
 	public enum LineMode
 	{
+        /// <summary>
+        /// 
+        /// </summary>
 		None,
+
+        /// <summary>
+        /// 
+        /// </summary>
 		Spline,
+
+        /// <summary>
+        /// 
+        /// </summary>
 		Straight,
 	}
 }

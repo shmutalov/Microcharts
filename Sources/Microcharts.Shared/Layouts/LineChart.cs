@@ -15,9 +15,12 @@ namespace Microcharts
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
         public LineChart()
         {
-            this.PointSize = 10;
+            PointSize = 10;
         }
 
         #endregion
@@ -46,6 +49,7 @@ namespace Microcharts
 
         #region Methods
 
+        /// <inheritdoc />
         public override void DrawContent(SKCanvas canvas, int width, int height)
         {
             var valueLabelSizes = MeasureValueLabels();
@@ -53,100 +57,114 @@ namespace Microcharts
             var headerHeight = CalculateHeaderHeight(valueLabelSizes);
             var itemSize = CalculateItemSize(width, height, footerHeight, headerHeight);
             var origin = CalculateYOrigin(itemSize.Height, headerHeight);
-            var points = this.CalculatePoints(itemSize, origin, headerHeight);
+            var points = CalculatePoints(itemSize, origin, headerHeight);
 
-            this.DrawArea(canvas, points, itemSize, origin);
-            this.DrawLine(canvas, points, itemSize);
-            this.DrawPoints(canvas, points);
-            this.DrawFooter(canvas, points, itemSize, height, footerHeight);
-            this.DrawValueLabel(canvas, points, itemSize, height, valueLabelSizes);
+            DrawArea(canvas, points, itemSize, origin);
+            DrawLine(canvas, points, itemSize);
+            DrawPoints(canvas, points);
+            DrawFooter(canvas, points, itemSize, height, footerHeight);
+            DrawValueLabel(canvas, points, itemSize, height, valueLabelSizes);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="points"></param>
+        /// <param name="itemSize"></param>
         protected void DrawLine(SKCanvas canvas, SKPoint[] points, SKSize itemSize)
         {
-            if (points.Length > 1 && this.LineMode != LineMode.None)
+            if (points.Length < 2 || LineMode == LineMode.None)
             {
-                using (var paint = new SKPaint
+                return;
+            }
+
+            using (var paint = new SKPaint
+            {
+                Style = SKPaintStyle.Stroke,
+                Color = SKColors.White,
+                StrokeWidth = LineSize,
+                IsAntialias = true,
+            })
+            using (var shader = CreateGradient(points))
+            {
+                paint.Shader = shader;
+
+                var path = new SKPath();
+
+                path.MoveTo(points[0]);
+
+                var last = (LineMode == LineMode.Spline) ? points.Length - 1 : points.Length;
+                for (int i = 0; i < last; i++)
                 {
-                    Style = SKPaintStyle.Stroke,
-                    Color = SKColors.White,
-                    StrokeWidth = this.LineSize,
-                    IsAntialias = true,
-                })
-                {
-                    using (var shader = this.CreateGradient(points))
+                    if (LineMode == LineMode.Spline)
                     {
-                        paint.Shader = shader;
-
-                        var path = new SKPath();
-
-                        path.MoveTo(points.First());
-
-                        var last = (this.LineMode == LineMode.Spline) ? points.Length - 1 : points.Length;
-                        for (int i = 0; i < last; i++)
-                        {
-                            if (this.LineMode == LineMode.Spline)
-                            {
-                                var entry = this.Entries.ElementAt(i);
-                                var nextEntry = this.Entries.ElementAt(i + 1);
-                                var cubicInfo = this.CalculateCubicInfo(points, i, itemSize);
-                                path.CubicTo(cubicInfo.control, cubicInfo.nextControl, cubicInfo.nextPoint);
-                            }
-                            else if (this.LineMode == LineMode.Straight)
-                            {
-                                path.LineTo(points[i]);
-                            }
-                        }
-
-                        canvas.DrawPath(path, paint);
+                        var entry = Entries[i];
+                        var nextEntry = Entries[i + 1];
+                        var cubicInfo = CalculateCubicInfo(points, i, itemSize);
+                        path.CubicTo(cubicInfo.control, cubicInfo.nextControl, cubicInfo.nextPoint);
+                    }
+                    else if (LineMode == LineMode.Straight)
+                    {
+                        path.LineTo(points[i]);
                     }
                 }
+
+                canvas.DrawPath(path, paint);
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="points"></param>
+        /// <param name="itemSize"></param>
+        /// <param name="origin"></param>
         protected void DrawArea(SKCanvas canvas, SKPoint[] points, SKSize itemSize, float origin)
         {
-            if (this.LineAreaAlpha > 0 && points.Length > 1)
+            if (LineAreaAlpha == 0 || points.Length < 2)
             {
-                using (var paint = new SKPaint
+                return;
+            }
+
+            ref var firstPoint = ref points[0];
+            ref var lastPoint = ref points[points.Length - 1];
+
+            using (var paint = new SKPaint
+            {
+                Style = SKPaintStyle.Fill,
+                Color = SKColors.White,
+                IsAntialias = true,
+            })
+            using (var shader = CreateGradient(points, LineAreaAlpha))
+            {
+                paint.Shader = shader;
+
+                var path = new SKPath();
+                path.MoveTo(firstPoint.X, origin);
+                path.LineTo(firstPoint);
+
+                var last = (LineMode == LineMode.Spline) ? points.Length - 1 : points.Length;
+                for (int i = 0; i < last; i++)
                 {
-                    Style = SKPaintStyle.Fill,
-                    Color = SKColors.White,
-                    IsAntialias = true,
-                })
-                {
-                    using (var shader = this.CreateGradient(points, this.LineAreaAlpha))
+                    if (LineMode == LineMode.Spline)
                     {
-                        paint.Shader = shader;
-
-                        var path = new SKPath();
-
-                        path.MoveTo(points.First().X, origin);
-                        path.LineTo(points.First());
-
-                        var last = (this.LineMode == LineMode.Spline) ? points.Length - 1 : points.Length;
-                        for (int i = 0; i < last; i++)
-                        {
-                            if (this.LineMode == LineMode.Spline)
-                            {
-                                var entry = this.Entries.ElementAt(i);
-                                var nextEntry = this.Entries.ElementAt(i + 1);
-                                var cubicInfo = this.CalculateCubicInfo(points, i, itemSize);
-                                path.CubicTo(cubicInfo.control, cubicInfo.nextControl, cubicInfo.nextPoint);
-                            }
-                            else if (this.LineMode == LineMode.Straight)
-                            {
-                                path.LineTo(points[i]);
-                            }
-                        }
-
-                        path.LineTo(points.Last().X, origin);
-
-                        path.Close();
-
-                        canvas.DrawPath(path, paint);
+                        var entry = Entries[i];
+                        var nextEntry = Entries[i + 1];
+                        var cubicInfo = CalculateCubicInfo(points, i, itemSize);
+                        path.CubicTo(cubicInfo.control, cubicInfo.nextControl, cubicInfo.nextPoint);
+                    }
+                    else if (LineMode == LineMode.Straight)
+                    {
+                        path.LineTo(points[i]);
                     }
                 }
+
+                path.LineTo(lastPoint.X, origin);
+                path.Close();
+
+                canvas.DrawPath(path, paint);
             }
         }
 
@@ -162,14 +180,14 @@ namespace Microcharts
 
         private SKShader CreateGradient(SKPoint[] points, byte alpha = 255)
         {
-            var startX = points.First().X;
-            var endX = points.Last().X;
+            var startX = points[0].X;
+            var endX = points[points.Length - 1].X;
             var rangeX = endX - startX;
 
             return SKShader.CreateLinearGradient(
                 new SKPoint(startX, 0),
                 new SKPoint(endX, 0),
-                this.Entries.Select(x => x.Color.WithAlpha(alpha)).ToArray(),
+                Entries.Select(x => x.Color.WithAlpha(alpha)).ToArray(),
                 null,
                 SKShaderTileMode.Clamp);
         }

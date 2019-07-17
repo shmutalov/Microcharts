@@ -10,8 +10,8 @@ namespace Microcharts.Forms
 	{
 		public ChartView()
 		{
-			this.BackgroundColor = Color.Transparent;
-			this.PaintSurface += OnPaintCanvas;
+			BackgroundColor = Color.Transparent;
+			PaintSurface += OnPaintCanvas;
 		}
 
 		public static readonly BindableProperty ChartProperty = BindableProperty.Create(nameof(Chart), typeof(Chart), typeof(ChartView), null, propertyChanged: OnChartChanged);
@@ -29,9 +29,9 @@ namespace Microcharts.Forms
 
 		private void OnPaintCanvas(object sender, SKPaintSurfaceEventArgs e)
 		{
-			if (this.Chart != null)
+			if (Chart != null)
 			{
-				this.Chart.Draw(e.Surface.Canvas, e.Info.Width, e.Info.Height);
+				Chart.Draw(e.Surface.Canvas, e.Info.Width, e.Info.Height);
 			}
 		}
 	}

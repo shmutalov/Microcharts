@@ -5,8 +5,22 @@ namespace Microcharts
 {
     using SkiaSharp;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class CanvasExtensions
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="label"></param>
+        /// <param name="labelColor"></param>
+        /// <param name="value"></param>
+        /// <param name="valueColor"></param>
+        /// <param name="textSize"></param>
+        /// <param name="point"></param>
+        /// <param name="horizontalAlignment"></param>
         public static void DrawCaptionLabels(this SKCanvas canvas, string label, SKColor labelColor, string value, SKColor valueColor, float textSize, SKPoint point, SKTextAlign horizontalAlignment)
         {
             var hasLabel = !string.IsNullOrEmpty(label);

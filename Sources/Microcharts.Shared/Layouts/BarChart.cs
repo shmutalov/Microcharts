@@ -17,9 +17,12 @@ namespace Microcharts
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
         public BarChart()
         {
-            this.PointSize = 0;
+            PointSize = 0;
         }
 
         #endregion
@@ -49,13 +52,13 @@ namespace Microcharts
             var headerHeight = CalculateHeaderHeight(valueLabelSizes);
             var itemSize = CalculateItemSize(width, height, footerHeight, headerHeight);
             var origin = CalculateYOrigin(itemSize.Height, headerHeight);
-            var points = this.CalculatePoints(itemSize, origin, headerHeight);
+            var points = CalculatePoints(itemSize, origin, headerHeight);
 
-            this.DrawBarAreas(canvas, points, itemSize, headerHeight);
-            this.DrawBars(canvas, points, itemSize, origin, headerHeight);
-            this.DrawPoints(canvas, points);
-            this.DrawFooter(canvas, points, itemSize, height, footerHeight);
-            this.DrawValueLabel(canvas, points, itemSize, height, valueLabelSizes);
+            DrawBarAreas(canvas, points, itemSize, headerHeight);
+            DrawBars(canvas, points, itemSize, origin, headerHeight);
+            DrawPoints(canvas, points);
+            DrawFooter(canvas, points, itemSize, height, footerHeight);
+            DrawValueLabel(canvas, points, itemSize, height, valueLabelSizes);
         }
 
         /// <summary>
@@ -69,34 +72,36 @@ namespace Microcharts
         protected void DrawBars(SKCanvas canvas, SKPoint[] points, SKSize itemSize, float origin, float headerHeight)
         {
             const float MinBarHeight = 4;
-            if (points.Length > 0)
+            if (points.Length == 0)
             {
-                for (int i = 0; i < this.Entries.Count(); i++)
+                return;
+            }
+
+            for (int i = 0; i < Entries.Count; i++)
+            {
+                var entry = Entries[i];
+                ref var point = ref points[i];
+
+                using (var paint = new SKPaint
                 {
-                    var entry = this.Entries.ElementAt(i);
-                    var point = points[i];
-
-                    using (var paint = new SKPaint
+                    Style = SKPaintStyle.Fill,
+                    Color = entry.Color,
+                })
+                {
+                    var x = point.X - (itemSize.Width / 2);
+                    var y = Math.Min(origin, point.Y);
+                    var height = Math.Max(MinBarHeight, Math.Abs(origin - point.Y));
+                    if (height < MinBarHeight)
                     {
-                        Style = SKPaintStyle.Fill,
-                        Color = entry.Color,
-                    })
-                    {
-                        var x = point.X - (itemSize.Width / 2);
-                        var y = Math.Min(origin, point.Y);
-                        var height = Math.Max(MinBarHeight, Math.Abs(origin - point.Y));
-                        if (height < MinBarHeight)
+                        height = MinBarHeight;
+                        if (y + height > Margin + itemSize.Height)
                         {
-                            height = MinBarHeight;
-                            if (y + height > this.Margin + itemSize.Height)
-                            {
-                                y = headerHeight + itemSize.Height - height;
-                            }
+                            y = headerHeight + itemSize.Height - height;
                         }
-
-                        var rect = SKRect.Create(x, y, itemSize.Width, height);
-                        canvas.DrawRect(rect, paint);
                     }
+
+                    var rect = SKRect.Create(x, y, itemSize.Width, height);
+                    canvas.DrawRect(rect, paint);
                 }
             }
         }
@@ -110,26 +115,29 @@ namespace Microcharts
         /// <param name="headerHeight">The header height.</param>
         protected void DrawBarAreas(SKCanvas canvas, SKPoint[] points, SKSize itemSize, float headerHeight)
         {
-            if (points.Length > 0 && this.PointAreaAlpha > 0)
+            if (points.Length == 0 || PointAreaAlpha == 0)
             {
-                for (int i = 0; i < points.Length; i++)
-                {
-                    var entry = this.Entries.ElementAt(i);
-                    var point = points[i];
+                return;
+            }
 
-                    using (var paint = new SKPaint
-                    {
-                        Style = SKPaintStyle.Fill,
-                        Color = entry.Color.WithAlpha(this.BarAreaAlpha),
-                    })
-                    {
-                        var max = entry.Value > 0 ? headerHeight : headerHeight + itemSize.Height;
-                        var height = Math.Abs(max - point.Y);
-                        var y = Math.Min(max, point.Y);
-                        canvas.DrawRect(SKRect.Create(point.X - (itemSize.Width / 2), y, itemSize.Width, height), paint);
-                    }
+            for (int i = 0; i < points.Length; i++)
+            {
+                var entry = Entries[i];
+                ref var point = ref points[i];
+
+                using (var paint = new SKPaint
+                {
+                    Style = SKPaintStyle.Fill,
+                    Color = entry.Color.WithAlpha(BarAreaAlpha),
+                })
+                {
+                    var max = entry.Value > 0 ? headerHeight : headerHeight + itemSize.Height;
+                    var height = Math.Abs(max - point.Y);
+                    var y = Math.Min(max, point.Y);
+                    canvas.DrawRect(SKRect.Create(point.X - (itemSize.Width / 2), y, itemSize.Width, height), paint);
                 }
             }
+
         }
 
         #endregion

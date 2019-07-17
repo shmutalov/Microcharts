@@ -35,23 +35,32 @@ namespace Microcharts
         /// <value>The start angle.</value>
         public float StartAngle { get; set; } = -90;
 
-        private float AbsoluteMinimum => this.Entries.Select(x => x.Value).Concat(new[] { this.MaxValue, this.MinValue, this.InternalMinValue ?? 0 }).Min(x => Math.Abs(x));
+        private float AbsoluteMinimum => Entries.Select(x => x.Value).Concat(new[] { MaxValue, MinValue, InternalMinValue ?? 0 }).Min(x => Math.Abs(x));
 
-        private float AbsoluteMaximum => this.Entries.Select(x => x.Value).Concat(new[] { this.MaxValue, this.MinValue, this.InternalMinValue ?? 0 }).Max(x => Math.Abs(x));
+        private float AbsoluteMaximum => Entries.Select(x => x.Value).Concat(new[] { MaxValue, MinValue, InternalMinValue ?? 0 }).Max(x => Math.Abs(x));
 
-        private float ValueRange => this.AbsoluteMaximum - this.AbsoluteMinimum;
+        private float ValueRange => AbsoluteMaximum - AbsoluteMinimum;
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="entry"></param>
+        /// <param name="radius"></param>
+        /// <param name="cx"></param>
+        /// <param name="cy"></param>
+        /// <param name="strokeWidth"></param>
         public void DrawGaugeArea(SKCanvas canvas, Entry entry, float radius, int cx, int cy, float strokeWidth)
         {
             using (var paint = new SKPaint
             {
                 Style = SKPaintStyle.Stroke,
                 StrokeWidth = strokeWidth,
-                Color = entry.Color.WithAlpha(this.LineAreaAlpha),
+                Color = entry.Color.WithAlpha(LineAreaAlpha),
                 IsAntialias = true,
             })
             {
@@ -59,6 +68,15 @@ namespace Microcharts
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="entry"></param>
+        /// <param name="radius"></param>
+        /// <param name="cx"></param>
+        /// <param name="cy"></param>
+        /// <param name="strokeWidth"></param>
         public void DrawGauge(SKCanvas canvas, Entry entry, float radius, int cx, int cy, float strokeWidth)
         {
             using (var paint = new SKPaint
@@ -72,42 +90,49 @@ namespace Microcharts
             {
                 using (SKPath path = new SKPath())
                 {
-                    var sweepAngle = 360 * (Math.Abs(entry.Value) - this.AbsoluteMinimum) / this.ValueRange;
-                    path.AddArc(SKRect.Create(cx - radius, cy - radius, 2 * radius, 2 * radius), this.StartAngle, sweepAngle);
+                    var sweepAngle = 360 * (Math.Abs(entry.Value) - AbsoluteMinimum) / ValueRange;
+                    path.AddArc(SKRect.Create(cx - radius, cy - radius, 2 * radius, 2 * radius), StartAngle, sweepAngle);
                     canvas.DrawPath(path, paint);
                 }
             }
         }
 
+        /// <inheritdoc />
         public override void DrawContent(SKCanvas canvas, int width, int height)
         {
-            this.DrawCaption(canvas, width, height);
+            DrawCaption(canvas, width, height);
 
-            var sumValue = this.Entries.Sum(x => Math.Abs(x.Value));
+            var sumValue = Entries.Sum(x => Math.Abs(x.Value));
             var radius = (Math.Min(width, height) - (2 * Margin)) / 2;
             var cx = width / 2;
             var cy = height / 2;
-            var lineWidth = (this.LineSize < 0) ? (radius / ((this.Entries.Count() + 1) * 2)) : this.LineSize;
+            var lineWidth = (LineSize < 0) ? (radius / ((Entries.Count() + 1) * 2)) : LineSize;
             var radiusSpace = lineWidth * 2;
 
-            for (int i = 0; i < this.Entries.Count(); i++)
+            for (int i = 0; i < Entries.Count(); i++)
             {
-                var entry = this.Entries.ElementAt(i);
+                var entry = Entries.ElementAt(i);
                 var entryRadius = (i + 1) * radiusSpace;
-                this.DrawGaugeArea(canvas, entry, entryRadius, cx, cy, lineWidth);
-                this.DrawGauge(canvas, entry, entryRadius, cx, cy, lineWidth);
+                DrawGaugeArea(canvas, entry, entryRadius, cx, cy, lineWidth);
+                DrawGauge(canvas, entry, entryRadius, cx, cy, lineWidth);
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         private void DrawCaption(SKCanvas canvas, int width, int height)
         {
-            var range = this.ValueRange;
+            var center = ValueRange / 2;
             var rightValues = new List<Entry>();
             var leftValues = new List<Entry>();
 
-            foreach (var entry in this.Entries)
+            foreach (var entry in Entries)
             {
-                if (Math.Abs(entry.Value) < range / 2)
+                if (entry.AbsValue < center)
                 {
                     rightValues.Add(entry);
                 }
@@ -119,8 +144,8 @@ namespace Microcharts
 
             leftValues.Reverse();
 
-            this.DrawCaptionElements(canvas, width, height, rightValues, false);
-            this.DrawCaptionElements(canvas, width, height, leftValues, true);
+            DrawCaptionElements(canvas, width, height, rightValues, false);
+            DrawCaptionElements(canvas, width, height, leftValues, true);
         }
 
         #endregion

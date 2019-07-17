@@ -3,10 +3,24 @@
 
 namespace Microcharts
 {
+    /// <summary>
+    /// 
+    /// </summary>
 	public enum PointMode
 	{
+        /// <summary>
+        /// 
+        /// </summary>
 		None,
+
+        /// <summary>
+        /// 
+        /// </summary>
 		Circle,
+
+        /// <summary>
+        /// 
+        /// </summary>
 		Square,
 	}
 }
