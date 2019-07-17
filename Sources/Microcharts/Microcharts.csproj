@@ -1,20 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>DataMicron.Microcharts</PackageId>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Company>DataMicron Inc.</Company>
     <Product>DataMicron.Microcharts</Product>
     <Authors>DataMicron, Microcharts</Authors>
+    <AssemblyName>DataMicron.Microcharts</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DocumentationFile>bin\Debug\netstandard1.4\Microcharts.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SkiaSharp" Version="1.59.1" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="SkiaSharp" Version="1.68.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
