@@ -8,6 +8,7 @@
     <Product>DataMicron.Microcharts</Product>
     <Authors>DataMicron, Microcharts</Authors>
     <AssemblyName>DataMicron.Microcharts</AssemblyName>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

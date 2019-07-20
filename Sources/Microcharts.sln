@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microcharts", "Microcharts\Microcharts.csproj", "{DE24E243-1C2C-4923-8B2E-53F7B2ABC814}"
 EndProject
@@ -43,6 +43,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microcharts.Forms", "Microcharts.Forms\Microcharts.Forms.csproj", "{EEF8A375-D304-48D1-BF66-29A442C708A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microcharts.Samples.Forms.macOS", "Microcharts.Samples.Forms.macOS\Microcharts.Samples.Forms.macOS.csproj", "{5765ED35-AD7E-49BB-8701-B45D3C949501}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChartGenerationTest", "ChartGenerationTest\ChartGenerationTest.csproj", "{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -417,6 +419,30 @@ Global
 		{5765ED35-AD7E-49BB-8701-B45D3C949501}.Release|x64.Build.0 = Release|Any CPU
 		{5765ED35-AD7E-49BB-8701-B45D3C949501}.Release|x86.ActiveCfg = Release|Any CPU
 		{5765ED35-AD7E-49BB-8701-B45D3C949501}.Release|x86.Build.0 = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|ARM.Build.0 = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|x64.Build.0 = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Debug|x86.Build.0 = Debug|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|ARM.ActiveCfg = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|ARM.Build.0 = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|iPhone.Build.0 = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|x64.ActiveCfg = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|x64.Build.0 = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|x86.ActiveCfg = Release|Any CPU
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -438,6 +464,7 @@ Global
 		{1F1EDFB9-8305-46AD-B427-DDD92A87969E} = {C5532034-562E-484C-A575-9F4E65BCC269}
 		{EEF8A375-D304-48D1-BF66-29A442C708A1} = {3D966807-08D2-47A6-94C2-93B0A8AF2ECE}
 		{5765ED35-AD7E-49BB-8701-B45D3C949501} = {371D4457-9946-40A6-AE2E-2DF8AA43A69B}
+		{C25BA5EB-AFEC-4D17-B261-4686A9535DC2} = {4CD22C16-BBD8-46FF-9203-EB493B2E04E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BCCD19D6-0567-4462-A494-5848BD95715F}

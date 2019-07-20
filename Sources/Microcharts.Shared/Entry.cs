@@ -70,6 +70,30 @@ namespace Microcharts
         /// <value>The color of the text.</value>
         public SKColor TextColor { get; set; } = SKColors.Gray;
 
+        /// <summary>
+        /// Gets or sets the outline color of the text (for the caption label).
+        /// </summary>
+        /// <value>The outline color of the text.</value>
+        public SKColor LabelStrokeColor { get; set; } = new SKColor(255, 255, 255, 128);
+
+        /// <summary>
+        /// Gets or sets the outline width of the text (for the caption label).
+        /// </summary>
+        /// <value>The outline width of the text.</value>
+        public float LabelStrokeWidth { get; set; } = 1f;
+
+        /// <summary>
+        /// Gets or sets the outline color of the text (for the value).
+        /// </summary>
+        /// <value>The outline color of the text.</value>
+        public SKColor ValueStrokeColor { get; set; } = SKColors.Empty;
+
+        /// <summary>
+        /// Gets or sets the outline width of the text (for the value).
+        /// </summary>
+        /// <value>The outline width of the text.</value>
+        public float ValueStrokeWidth { get; set; } = 0f;
+
         #endregion
     }
 }

@@ -19,60 +19,115 @@ namespace Microcharts
         /// <param name="value"></param>
         /// <param name="valueColor"></param>
         /// <param name="textSize"></param>
+        /// <param name="labelStrokeColor"></param>
+        /// <param name="labelStrokeWidth"></param>
+        /// <param name="valueStrokeColor"></param>
+        /// <param name="valueStrokeWidth"></param>
         /// <param name="point"></param>
         /// <param name="horizontalAlignment"></param>
-        public static void DrawCaptionLabels(this SKCanvas canvas, string label, SKColor labelColor, string value, SKColor valueColor, float textSize, SKPoint point, SKTextAlign horizontalAlignment)
+        public static void DrawCaptionLabels(
+            this SKCanvas canvas, 
+            string label, 
+            SKColor labelColor, 
+            string value, 
+            SKColor valueColor, 
+            float textSize, 
+            SKColor labelStrokeColor,
+            float labelStrokeWidth,
+            SKColor valueStrokeColor,
+            float valueStrokeWidth,
+            SKPoint point, 
+            SKTextAlign horizontalAlignment)
         {
             var hasLabel = !string.IsNullOrEmpty(label);
             var hasValueLabel = !string.IsNullOrEmpty(value);
 
-            if (hasLabel || hasValueLabel)
+            if (!hasLabel && !hasValueLabel)
             {
-                var hasOffset = hasLabel && hasValueLabel;
-                var captionMargin = textSize * 0.60f;
-                var space = hasOffset ? captionMargin : 0;
+                return;
+            }
 
-                if (hasLabel)
+            var hasOffset = hasLabel && hasValueLabel;
+            var captionMargin = textSize * 0.60f;
+            var space = hasOffset ? captionMargin : 0;
+
+            if (hasLabel)
+            {
+                using (var paint = new SKPaint
                 {
-                    using (var paint = new SKPaint()
-                    {
-                        TextSize = textSize,
-                        IsAntialias = true,
-                        Color = labelColor,
-                        IsStroke = false,
-                        TextAlign = horizontalAlignment,
-                    })
-                    {
-                        var bounds = new SKRect();
-                        var text = label;
-                        paint.MeasureText(text, ref bounds);
+                    TextSize = textSize,
+                    IsAntialias = true,
+                    Color = labelColor,
+                    IsStroke = false,
+                    FakeBoldText = false,
+                    TextAlign = horizontalAlignment,
+                })
+                {
+                    var bounds = new SKRect();
+                    var text = label;
+                    paint.MeasureText(text, ref bounds);
 
-                        var y = point.Y - ((bounds.Top + bounds.Bottom) / 2) - space;
+                    var y = point.Y - ((bounds.Top + bounds.Bottom) / 2) - space;
 
-                        canvas.DrawText(text, point.X, y, paint);
+                    // draw outline
+                    if (labelStrokeWidth > 0f && labelStrokeColor != SKColor.Empty)
+                    {
+                        using (var strokePaint = new SKPaint
+                        {
+                            Style = SKPaintStyle.Stroke,
+                            TextSize = textSize,
+                            IsAntialias = true,
+                            IsStroke = true,
+                            FakeBoldText = true,
+                            StrokeWidth = labelStrokeWidth,
+                            Color = labelStrokeColor,
+                            TextAlign = horizontalAlignment,
+                        })
+                            canvas.DrawText(text, point.X, y, strokePaint);
                     }
+
+                    canvas.DrawText(text, point.X, y, paint);
                 }
+            }
 
-                if (hasValueLabel)
+            if (hasValueLabel)
+            {
+                using (var paint = new SKPaint()
                 {
-                    using (var paint = new SKPaint()
-                    {
-                        TextSize = textSize,
-                        IsAntialias = true,
-                        FakeBoldText = true,
-                        Color = valueColor,
-                        IsStroke = false,
-                        TextAlign = horizontalAlignment,
-                    })
-                    {
-                        var bounds = new SKRect();
-                        var text = value;
-                        paint.MeasureText(text, ref bounds);
+                    Style = SKPaintStyle.StrokeAndFill,
+                    TextSize = textSize,
+                    IsAntialias = true,
+                    FakeBoldText = false,
+                    Color = valueColor,
+                    IsStroke = false,
+                    StrokeWidth = 1f,
+                    TextAlign = horizontalAlignment,
+                })
+                {
+                    var bounds = new SKRect();
+                    var text = value;
+                    paint.MeasureText(text, ref bounds);
 
-                        var y = point.Y - ((bounds.Top + bounds.Bottom) / 2) + space;
+                    var y = point.Y - ((bounds.Top + bounds.Bottom) / 2) + space;
 
-                        canvas.DrawText(text, point.X, y, paint);
+                    // draw outline
+                    if (valueStrokeWidth > 0f && valueStrokeColor != SKColor.Empty)
+                    {
+                        using (var strokePaint = new SKPaint
+                        {
+                            Style = SKPaintStyle.StrokeAndFill,
+                            TextSize = textSize,
+                            IsAntialias = true,
+                            FakeBoldText = true,
+                            Color = valueStrokeColor,
+                            StrokeWidth = valueStrokeWidth,
+                            IsStroke = true,
+                            TextAlign = horizontalAlignment,
+                        })
+                            canvas.DrawText(text, point.X, y, strokePaint);
                     }
+
+                    canvas.DrawText(text, point.X, y, paint);
                 }
             }
         }

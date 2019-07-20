@@ -153,34 +153,50 @@ namespace Microcharts
                 var hasLabel = !string.IsNullOrEmpty(entry.Label);
                 var hasValueLabel = !string.IsNullOrEmpty(entry.ValueLabel);
 
-                if (hasLabel || hasValueLabel)
+                if (!hasLabel && !hasValueLabel)
                 {
-                    var hasOffset = hasLabel && hasValueLabel;
-                    var captionMargin = LabelTextSize * 0.60f;
-                    var space = hasOffset ? captionMargin : 0;
-                    var captionX = isLeft ? Margin : width - Margin - LabelTextSize;
-
-                    using (var paint = new SKPaint
-                    {
-                        Style = SKPaintStyle.Fill,
-                        Color = entry.Color,
-                    })
-                    {
-                        var rect = SKRect.Create(captionX, y, LabelTextSize, LabelTextSize);
-                        canvas.DrawRect(rect, paint);
-                    }
-
-                    if (isLeft)
-                    {
-                        captionX += LabelTextSize + captionMargin;
-                    }
-                    else
-                    {
-                        captionX -= captionMargin;
-                    }
-
-                    canvas.DrawCaptionLabels(entry.Label, entry.TextColor, entry.ValueLabel, entry.Color, LabelTextSize, new SKPoint(captionX, y + (LabelTextSize / 2)), isLeft ? SKTextAlign.Left : SKTextAlign.Right);
+                    continue;
                 }
+
+                var hasOffset = hasLabel && hasValueLabel;
+                var captionMargin = LabelTextSize * 0.60f;
+                var space = hasOffset ? captionMargin : 0;
+                var captionX = isLeft ? Margin : width - Margin - LabelTextSize;
+
+                using (var paint = new SKPaint
+                {
+                    Style = SKPaintStyle.Fill,
+                    Color = entry.Color,
+                })
+                {
+                    var rect = SKRect.Create(captionX, y, LabelTextSize, LabelTextSize);
+                    canvas.DrawRect(rect, paint);
+                }
+
+                if (isLeft)
+                {
+                    captionX += LabelTextSize + captionMargin;
+                }
+                else
+                {
+                    captionX -= captionMargin;
+                }
+
+                var textPos = new SKPoint(captionX, y + (LabelTextSize / 2));
+                var textAlign = isLeft ? SKTextAlign.Left : SKTextAlign.Right;
+
+                canvas.DrawCaptionLabels(
+                    entry.Label,
+                    entry.TextColor,
+                    entry.ValueLabel,
+                    entry.Color,
+                    LabelTextSize,
+                    entry.LabelStrokeColor,
+                    entry.LabelStrokeWidth,
+                    entry.ValueStrokeColor,
+                    entry.ValueStrokeWidth,
+                    textPos,
+                    textAlign);
             }
         }
 
