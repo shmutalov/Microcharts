@@ -37,6 +37,11 @@ namespace Microcharts
         /// </summary>
         private float ValueRange => MaxValue - MinValue;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsValueAlwaysOnTop { get; set; } = false;
+
         #endregion
 
         #region Methods
@@ -257,14 +262,14 @@ namespace Microcharts
         }
 
         /// <summary>
-        /// 
+        /// Draw value labels
         /// </summary>
         /// <param name="canvas"></param>
         /// <param name="points"></param>
         /// <param name="itemSize"></param>
         /// <param name="height"></param>
         /// <param name="valueLabelSizes"></param>
-        protected void DrawValueLabel(SKCanvas canvas, SKPoint[] points, SKSize itemSize, float height, SKRect[] valueLabelSizes)
+        protected void DrawValueLabel_(SKCanvas canvas, SKPoint[] points, SKSize itemSize, float height, SKRect[] valueLabelSizes)
         {
             if (points.Length == 0)
             {
@@ -315,6 +320,82 @@ namespace Microcharts
                     }
 
                     canvas.DrawText(text, 0, 0, paint);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw value labels
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="points"></param>
+        /// <param name="itemSize"></param>
+        /// <param name="height"></param>
+        /// <param name="valueLabelSizes"></param>
+        protected void DrawValueLabel(SKCanvas canvas, SKPoint[] points, SKSize itemSize, float height, SKRect[] valueLabelSizes)
+        {
+            if (points.Length == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                var entry = Entries[i];
+                ref var point = ref points[i];
+
+                if (string.IsNullOrEmpty(entry.ValueLabel))
+                {
+                    continue;
+                }
+
+                using (new SKAutoCanvasRestore(canvas))
+                using (var paint = new SKPaint
+                {
+                    TextSize = LabelTextSize,
+                    FakeBoldText = false,
+                    IsAntialias = true,
+                    Color = entry.Color,
+                    IsStroke = false
+                })
+                {
+                    var bounds = new SKRect();
+                    var text = entry.ValueLabel;
+                    paint.MeasureText(text, ref bounds);
+
+                    if (bounds.Width > itemSize.Width)
+                    {
+                        text = text.Substring(0, Math.Min(3, text.Length));
+                        paint.MeasureText(text, ref bounds);
+                    }
+
+                    if (bounds.Width > itemSize.Width)
+                    {
+                        text = text.Substring(0, Math.Min(1, text.Length));
+                        paint.MeasureText(text, ref bounds);
+                    }
+
+                    var posX = point.X - (bounds.Width / 2);
+                    //var posY = height - (Margin + (LabelTextSize / 2));
+                    var posY = IsValueAlwaysOnTop ? Margin : point.Y - 20f;
+
+                    // draw outline
+                    if (entry.ValueStrokeWidth > 0f && entry.ValueStrokeColor != SKColor.Empty)
+                    {
+                        using (var strokePaint = new SKPaint
+                        {
+                            Style = SKPaintStyle.Stroke,
+                            StrokeWidth = entry.ValueStrokeWidth,
+                            TextSize = LabelTextSize,
+                            FakeBoldText = true,
+                            IsAntialias = true,
+                            Color = entry.ValueStrokeColor,
+                            IsStroke = true
+                        })
+                            canvas.DrawText(text, posX, posY, strokePaint);
+                    }
+
+                    canvas.DrawText(text, posX, posY, paint);
                 }
             }
         }

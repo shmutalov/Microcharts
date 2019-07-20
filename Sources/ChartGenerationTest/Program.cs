@@ -37,7 +37,7 @@ namespace ChartGenerationTest
                 }
             };
 
-            var chart = new BarChart
+            var chart = new PointChart
             {
                 Entries = entries,
                 //HoleRadius = 0.5f,

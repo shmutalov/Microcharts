@@ -23,6 +23,7 @@ namespace Microcharts
         public BarChart()
         {
             PointSize = 0;
+            IsValueAlwaysOnTop = true;
         }
 
         #endregion
