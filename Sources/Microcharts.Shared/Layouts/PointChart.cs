@@ -174,7 +174,26 @@ namespace Microcharts
                         paint.MeasureText(text, ref bounds);
                     }
 
-                    canvas.DrawText(text, point.X - (bounds.Width / 2), height - (Margin + (LabelTextSize / 2)), paint);
+                    var posX = point.X - (bounds.Width / 2);
+                    var posY = height - (Margin + (LabelTextSize / 2));
+
+                    // draw outline
+                    if (entry.LabelStrokeWidth > 0f && entry.LabelStrokeColor != SKColor.Empty)
+                    {
+                        using (var strokePaint = new SKPaint
+                        {
+                            Style = SKPaintStyle.Stroke,
+                            StrokeWidth = entry.LabelStrokeWidth,
+                            TextSize = LabelTextSize,
+                            FakeBoldText = true,
+                            IsAntialias = true,
+                            Color = entry.LabelStrokeColor,
+                            IsStroke = true
+                        })
+                            canvas.DrawText(text, posX, posY, strokePaint);
+                    }
+                    
+                    canvas.DrawText(text, posX, posY, paint);
                 }
             }
         }
@@ -256,7 +275,6 @@ namespace Microcharts
             {
                 var entry = Entries[i];
                 ref var point = ref points[i];
-                var isAbove = point.Y > (Margin + (itemSize.Height / 2));
 
                 if (string.IsNullOrEmpty(entry.ValueLabel))
                 {
@@ -267,7 +285,7 @@ namespace Microcharts
                 using (var paint = new SKPaint
                 {
                     TextSize = LabelTextSize,
-                    FakeBoldText = true,
+                    FakeBoldText = false,
                     IsAntialias = true,
                     Color = entry.Color,
                     IsStroke = false
@@ -279,6 +297,22 @@ namespace Microcharts
 
                     canvas.RotateDegrees(90);
                     canvas.Translate(Margin, -point.X + (bounds.Height / 2));
+
+                    // draw outline
+                    if (entry.ValueStrokeWidth > 0f && entry.ValueStrokeColor != SKColor.Empty)
+                    {
+                        using (var strokePaint = new SKPaint
+                        {
+                            Style = SKPaintStyle.Stroke,
+                            StrokeWidth = entry.ValueStrokeWidth,
+                            TextSize = LabelTextSize,
+                            FakeBoldText = true,
+                            IsAntialias = true,
+                            Color = entry.ValueStrokeColor,
+                            IsStroke = true
+                        })
+                            canvas.DrawText(text, 0, 0, strokePaint);
+                    }
 
                     canvas.DrawText(text, 0, 0, paint);
                 }

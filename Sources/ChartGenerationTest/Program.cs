@@ -37,11 +37,11 @@ namespace ChartGenerationTest
                 }
             };
 
-            var chart = new DonutChart
+            var chart = new BarChart
             {
                 Entries = entries,
-                HoleRadius = 0.5f,
-                // BackgroundColor = SKColors.Black
+                //HoleRadius = 0.5f,
+                BackgroundColor = SKColors.Black
             };
 
             using (var bmp = new SKBitmap(512, 512))
