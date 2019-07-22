@@ -144,8 +144,8 @@ namespace Microcharts
 
             leftValues.Reverse();
 
-            DrawCaptionElements(canvas, width, height, rightValues, false);
-            DrawCaptionElements(canvas, width, height, leftValues, true);
+            DrawCaptionElementsHorizontal(canvas, width, height, rightValues, false);
+            DrawCaptionElementsHorizontal(canvas, width, height, leftValues, true);
         }
 
         #endregion

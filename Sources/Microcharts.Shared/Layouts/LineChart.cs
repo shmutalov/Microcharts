@@ -52,18 +52,18 @@ namespace Microcharts
         /// <inheritdoc />
         public override void DrawContent(SKCanvas canvas, int width, int height)
         {
-            var valueLabelSizes = MeasureValueLabels();
-            var footerHeight = CalculateFooterHeight(valueLabelSizes);
+            var (labelSizes, valueLabelSizes) = MeasureLabelSizes();
+            var footerHeight = CalculateFooterHeight();
             var headerHeight = CalculateHeaderHeight(valueLabelSizes);
             var itemSize = CalculateItemSize(width, height, footerHeight, headerHeight);
             var origin = CalculateYOrigin(itemSize.Height, headerHeight);
-            var points = CalculatePoints(itemSize, origin, headerHeight);
+            var points = CalculatePointPositions(itemSize, headerHeight);
 
             DrawArea(canvas, points, itemSize, origin);
             DrawLine(canvas, points, itemSize);
             DrawPoints(canvas, points);
-            DrawFooter(canvas, points, itemSize, height, footerHeight);
-            DrawValueLabel(canvas, points, itemSize, height, valueLabelSizes);
+            DrawFooter(canvas, points, itemSize, height, footerHeight, labelSizes);
+            DrawValueLabels(canvas, points, itemSize, valueLabelSizes);
         }
 
         /// <summary>

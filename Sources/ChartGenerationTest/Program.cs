@@ -37,11 +37,14 @@ namespace ChartGenerationTest
                 }
             };
 
-            var chart = new PointChart
+            var chart = new BarChart
             {
                 Entries = entries,
-                //HoleRadius = 0.5f,
+                PointSize = 14f,
+                IsValueLabelNearValuePoints = true,
+                Orientation = ChartOrientation.Horizontal,
                 BackgroundColor = SKColors.Black
+                //HoleRadius = 0.5f,
             };
 
             using (var bmp = new SKBitmap(512, 512))

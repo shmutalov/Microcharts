@@ -134,7 +134,7 @@ namespace Microcharts
         /// <param name="height">The height.</param>
         /// <param name="entries">The entries.</param>
         /// <param name="isLeft">If set to <c>true</c> is left.</param>
-        protected void DrawCaptionElements(SKCanvas canvas, int width, int height, List<Entry> entries, bool isLeft)
+        protected void DrawCaptionElementsHorizontal(SKCanvas canvas, int width, int height, List<Entry> entries, bool isLeft)
         {
             var margin = 2 * Margin;
             var availableHeight = height - (2 * margin);

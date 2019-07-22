@@ -23,7 +23,7 @@ namespace Microcharts
         public BarChart()
         {
             PointSize = 0;
-            IsValueAlwaysOnTop = true;
+            IsValueLabelNearValuePoints = false;
         }
 
         #endregion
@@ -48,18 +48,18 @@ namespace Microcharts
         /// <param name="height">The height of the chart.</param>
         public override void DrawContent(SKCanvas canvas, int width, int height)
         {
-            var valueLabelSizes = MeasureValueLabels();
-            var footerHeight = CalculateFooterHeight(valueLabelSizes);
+            var (labelSizes, valueLabelSizes) = MeasureLabelSizes();
+            var footerHeight = CalculateFooterHeight();
             var headerHeight = CalculateHeaderHeight(valueLabelSizes);
             var itemSize = CalculateItemSize(width, height, footerHeight, headerHeight);
             var origin = CalculateYOrigin(itemSize.Height, headerHeight);
-            var points = CalculatePoints(itemSize, origin, headerHeight);
+            var points = CalculatePointPositions(itemSize, headerHeight);
 
             DrawBarAreas(canvas, points, itemSize, headerHeight);
             DrawBars(canvas, points, itemSize, origin, headerHeight);
             DrawPoints(canvas, points);
-            DrawFooter(canvas, points, itemSize, height, footerHeight);
-            DrawValueLabel(canvas, points, itemSize, height, valueLabelSizes);
+            DrawFooter(canvas, points, itemSize, height, footerHeight, labelSizes);
+            DrawValueLabels(canvas, points, itemSize, valueLabelSizes);
         }
 
         /// <summary>
@@ -67,10 +67,10 @@ namespace Microcharts
         /// </summary>
         /// <param name="canvas">The canvas.</param>
         /// <param name="points">The points.</param>
-        /// <param name="itemSize">The item size.</param>
+        /// <param name="bodySize">The item size.</param>
         /// <param name="origin">The origin.</param>
         /// <param name="headerHeight">The Header height.</param>
-        protected void DrawBars(SKCanvas canvas, SKPoint[] points, SKSize itemSize, float origin, float headerHeight)
+        protected void DrawBars(SKCanvas canvas, SKPoint[] points, SKSize bodySize, float origin, float headerHeight)
         {
             const float MinBarHeight = 4;
             if (points.Length == 0)
@@ -89,19 +89,19 @@ namespace Microcharts
                     Color = entry.Color,
                 })
                 {
-                    var x = point.X - (itemSize.Width / 2);
+                    var x = point.X - (bodySize.Width / 2);
                     var y = Math.Min(origin, point.Y);
                     var height = Math.Max(MinBarHeight, Math.Abs(origin - point.Y));
                     if (height < MinBarHeight)
                     {
                         height = MinBarHeight;
-                        if (y + height > Margin + itemSize.Height)
+                        if (y + height > Margin + bodySize.Height)
                         {
-                            y = headerHeight + itemSize.Height - height;
+                            y = headerHeight + bodySize.Height - height;
                         }
                     }
 
-                    var rect = SKRect.Create(x, y, itemSize.Width, height);
+                    var rect = SKRect.Create(x, y, bodySize.Width, height);
                     canvas.DrawRect(rect, paint);
                 }
             }

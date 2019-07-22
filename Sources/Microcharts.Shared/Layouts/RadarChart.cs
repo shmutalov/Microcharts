@@ -50,7 +50,7 @@ namespace Microcharts
 
         private float AbsoluteMinimum => Entries.Select(x => x.Value).Concat(new[] { MaxValue, MinValue, InternalMinValue ?? 0 }).Min(x => Math.Abs(x));
 
-        private float AbsoluteMaximum => Entries.Select(x => x.Value).Concat(new[] { MaxValue, MinValue, InternalMinValue ?? 0 }).Max(x => Math.Abs(x));
+        private float AbsoluteMaximum => Entries.Select(x => x.Value).Concat(new[] { MaxValue, MinValue, InternalMaxValue ?? 0 }).Max(x => Math.Abs(x));
 
         private float ValueRange => AbsoluteMaximum - AbsoluteMinimum;
 
