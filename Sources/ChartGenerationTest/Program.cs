@@ -40,10 +40,9 @@ namespace ChartGenerationTest
             var chart = new BarChart
             {
                 Entries = entries,
-                PointSize = 14f,
                 IsValueLabelNearValuePoints = true,
-                Orientation = ChartOrientation.Horizontal,
-                BackgroundColor = SKColors.Black
+                Orientation = ChartOrientation.Vertical,
+                BackgroundColor = SKColors.White
                 //HoleRadius = 0.5f,
             };
 

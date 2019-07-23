@@ -22,7 +22,8 @@ namespace Microcharts
         /// </summary>
         public BarChart()
         {
-            PointSize = 0;
+            PointSize = 14f;
+            PointMode = PointMode.None;
             IsValueLabelNearValuePoints = false;
         }
 
@@ -51,15 +52,15 @@ namespace Microcharts
             var (labelSizes, valueLabelSizes) = MeasureLabelSizes();
             var footerHeight = CalculateFooterHeight();
             var headerHeight = CalculateHeaderHeight(valueLabelSizes);
-            var itemSize = CalculateItemSize(width, height, footerHeight, headerHeight);
+            var itemSize = CalculateItemSizeVertical(width, height, footerHeight, headerHeight);
             var origin = CalculateYOrigin(itemSize.Height, headerHeight);
-            var points = CalculatePointPositions(itemSize, headerHeight);
+            var points = CalculatePointPositionsVertical(itemSize, headerHeight);
 
             DrawBarAreas(canvas, points, itemSize, headerHeight);
             DrawBars(canvas, points, itemSize, origin, headerHeight);
             DrawPoints(canvas, points);
             DrawFooter(canvas, points, itemSize, height, footerHeight, labelSizes);
-            DrawValueLabels(canvas, points, itemSize, valueLabelSizes);
+            DrawValueLabelsVertical(canvas, points, itemSize, valueLabelSizes);
         }
 
         /// <summary>

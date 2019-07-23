@@ -55,15 +55,15 @@ namespace Microcharts
             var (labelSizes, valueLabelSizes) = MeasureLabelSizes();
             var footerHeight = CalculateFooterHeight();
             var headerHeight = CalculateHeaderHeight(valueLabelSizes);
-            var itemSize = CalculateItemSize(width, height, footerHeight, headerHeight);
+            var itemSize = CalculateItemSizeVertical(width, height, footerHeight, headerHeight);
             var origin = CalculateYOrigin(itemSize.Height, headerHeight);
-            var points = CalculatePointPositions(itemSize, headerHeight);
+            var points = CalculatePointPositionsVertical(itemSize, headerHeight);
 
             DrawArea(canvas, points, itemSize, origin);
             DrawLine(canvas, points, itemSize);
             DrawPoints(canvas, points);
             DrawFooter(canvas, points, itemSize, height, footerHeight, labelSizes);
-            DrawValueLabels(canvas, points, itemSize, valueLabelSizes);
+            DrawValueLabelsVertical(canvas, points, itemSize, valueLabelSizes);
         }
 
         /// <summary>

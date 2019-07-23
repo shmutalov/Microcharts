@@ -71,10 +71,26 @@ namespace Microcharts
             return headerHeight + ((MaxValue / ValueRange) * itemHeight);
         }
 
+        /// <summary>
+        /// Calculate of the x values start position
+        /// </summary>
+        /// <param name="itemWidth"></param>
+        /// <param name="leftPanelWidth"></param>
+        /// <returns></returns>
+        public float CalculateXOrigin(float itemWidth, float leftPanelWidth)
+        {
+            if (MaxValue <= 0)
+            {
+                return leftPanelWidth + itemWidth;
+            }
+
+            return leftPanelWidth + Margin;
+        }
+
         /// <inheritdoc />
         public override void DrawContent(SKCanvas canvas, int width, int height)
         {
-            var (valueLabelSizes, labelSizes) = MeasureLabelSizes();
+            var (labelSizes, valueLabelSizes) = MeasureLabelSizes();
 
             switch (Orientation)
             {
@@ -89,32 +105,33 @@ namespace Microcharts
 
         private void DrawHorizontal(SKCanvas canvas, int width, int height, SKRect[] labelSizes, SKRect[] valueLabelSizes)
         {
-            var footerHeight = CalculateFooterHeight();
-            var headerHeight = CalculateHeaderHeight(valueLabelSizes);
-            var itemSize = CalculateItemSize(width, height, footerHeight, headerHeight);
-            var origin = CalculateYOrigin(itemSize.Height, headerHeight);
-            var points = CalculatePointPositions(itemSize, headerHeight);
+            var leftPanelWidth = CalculateLeftPanelWidth(labelSizes);
+            var rigthPanelWidth = CalculateRightPanelWidth(valueLabelSizes);
 
-            DrawPointAreas(canvas, points, origin);
+            var itemSize = CalculateItemSizeHorizontal(width, height, leftPanelWidth, rigthPanelWidth);
+            var origin = CalculateXOrigin(itemSize.Height, leftPanelWidth);
+            var points = CalculatePointPositionsHorizontal(itemSize, leftPanelWidth);
+
+            DrawPointAreasHorizontal(canvas, points, origin);
             DrawPoints(canvas, points);
-            DrawFooter(canvas, points, itemSize, height, footerHeight, labelSizes);
+            DrawLeftPanel(canvas, points, itemSize, leftPanelWidth, labelSizes);
 
-            DrawValueLabels(canvas, points, itemSize, valueLabelSizes);
+            DrawValueLabelsHorizontal(canvas, points, itemSize, valueLabelSizes, width, rigthPanelWidth);
         }
 
         private void DrawVertical(SKCanvas canvas, int width, int height, SKRect[] labelSizes, SKRect[] valueLabelSizes)
         {
             var footerHeight = CalculateFooterHeight();
             var headerHeight = CalculateHeaderHeight(valueLabelSizes);
-            var itemSize = CalculateItemSize(width, height, footerHeight, headerHeight);
+            var itemSize = CalculateItemSizeVertical(width, height, footerHeight, headerHeight);
             var origin = CalculateYOrigin(itemSize.Height, headerHeight);
-            var points = CalculatePointPositions(itemSize, headerHeight);
+            var points = CalculatePointPositionsVertical(itemSize, headerHeight);
 
-            DrawPointAreas(canvas, points, origin);
+            DrawPointAreasVertical(canvas, points, origin);
             DrawPoints(canvas, points);
             DrawFooter(canvas, points, itemSize, height, footerHeight, labelSizes);
 
-            DrawValueLabels(canvas, points, itemSize, valueLabelSizes);
+            DrawValueLabelsVertical(canvas, points, itemSize, valueLabelSizes);
         }
 
         /// <summary>
@@ -125,7 +142,7 @@ namespace Microcharts
         /// <param name="footerHeight"></param>
         /// <param name="headerHeight"></param>
         /// <returns></returns>
-        protected SKSize CalculateItemSize(int width, int height, float footerHeight, float headerHeight)
+        protected SKSize CalculateItemSizeVertical(int width, int height, float footerHeight, float headerHeight)
         {
             var w = (width - ((Entries.Count + 1) * Margin)) / Entries.Count;
             var h = height - Margin - footerHeight - headerHeight;
@@ -133,12 +150,28 @@ namespace Microcharts
         }
 
         /// <summary>
-        /// 
+        /// Calculate chart item size (per point bounds)
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="leftPanelWidth"></param>
+        /// <param name="rightPanelWidth"></param>
+        /// <returns></returns>
+        protected SKSize CalculateItemSizeHorizontal(int width, int height, float leftPanelWidth, float rightPanelWidth)
+        {
+            var w = width - leftPanelWidth - rightPanelWidth;
+            var h = (height - ((Entries.Count + 1) * Margin)) / Entries.Count;
+            
+            return new SKSize(w, h);
+        }
+
+        /// <summary>
+        /// Calculate point positions in canvas (vertical)
         /// </summary>
         /// <param name="itemSize"></param>
         /// <param name="headerHeight"></param>
         /// <returns></returns>
-        protected SKPoint[] CalculatePointPositions(SKSize itemSize, float headerHeight)
+        protected SKPoint[] CalculatePointPositionsVertical(SKSize itemSize, float headerHeight)
         {
             var result = new SKPoint[Entries.Count];
             var halfBodyWidthPlusMargin = (itemSize.Width / 2f) + Margin;
@@ -158,7 +191,32 @@ namespace Microcharts
         }
 
         /// <summary>
-        /// 
+        /// Calculate point positions in canvas (horizontal)
+        /// </summary>
+        /// <param name="itemSize"></param>
+        /// <param name="leftPanelWidth"></param>
+        /// <returns></returns>
+        protected SKPoint[] CalculatePointPositionsHorizontal(SKSize itemSize, float leftPanelWidth)
+        {
+            var result = new SKPoint[Entries.Count];
+            var halfBodyHeightPlusMargin = (itemSize.Height / 2f) + Margin;
+            var bodyHeightPlusMargin = itemSize.Height + Margin;
+
+            for (var i = 0; i < Entries.Count; i++)
+            {
+                var entry = Entries[i];
+
+                var y = halfBodyHeightPlusMargin + (i * bodyHeightPlusMargin);
+                var x = leftPanelWidth + (((entry.Value - MinValue) / ValueRange) * itemSize.Width);
+
+                result[i] = new SKPoint(x, y);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Draw footer (labels)
         /// </summary>
         /// <param name="canvas"></param>
         /// <param name="points"></param>
@@ -168,11 +226,25 @@ namespace Microcharts
         /// <param name="labelSizes"></param>
         protected void DrawFooter(SKCanvas canvas, SKPoint[] points, SKSize itemSize, int height, float footerHeight, SKRect[] labelSizes)
         {
-            DrawLabels(canvas, points, itemSize, height, footerHeight, labelSizes);
+            DrawLabelsVertical(canvas, points, itemSize, height, footerHeight, labelSizes);
         }
 
         /// <summary>
-        /// 
+        /// Draw left panel (labels)
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="points"></param>
+        /// <param name="itemSize"></param>
+        /// <param name="width"></param>
+        /// <param name="leftPanelWidth"></param>
+        /// <param name="labelSizes"></param>
+        protected void DrawLeftPanel(SKCanvas canvas, SKPoint[] points, SKSize itemSize, float leftPanelWidth, SKRect[] labelSizes)
+        {
+            DrawLabelsHorizontal(canvas, points, itemSize, leftPanelWidth, labelSizes);
+        }
+
+        /// <summary>
+        /// Draw labels (vertical)
         /// </summary>
         /// <param name="canvas"></param>
         /// <param name="points"></param>
@@ -180,7 +252,7 @@ namespace Microcharts
         /// <param name="height"></param>
         /// <param name="footerHeight"></param>
         /// <param name="labelSizes"></param>
-        protected void DrawLabels(
+        protected void DrawLabelsVertical(
             SKCanvas canvas,
             SKPoint[] points,
             SKSize itemSize,
@@ -234,7 +306,68 @@ namespace Microcharts
         }
 
         /// <summary>
-        /// 
+        /// Draw labels (horizontal)
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="points"></param>
+        /// <param name="itemSize"></param>
+        /// <param name="width"></param>
+        /// <param name="leftPanelWidth"></param>
+        /// <param name="labelSizes"></param>
+        protected void DrawLabelsHorizontal(
+            SKCanvas canvas,
+            SKPoint[] points,
+            SKSize itemSize,
+            float leftPanelWidth,
+            SKRect[] labelSizes)
+        {
+            for (var i = 0; i < Entries.Count; i++)
+            {
+                var entry = Entries[i];
+                ref var point = ref points[i];
+                ref var bounds = ref labelSizes[i];
+
+                if (bounds == SKRect.Empty)
+                {
+                    continue;
+                }
+
+                using (var paint = new SKPaint
+                {
+                    TextSize = LabelTextSize,
+                    TextAlign = SKTextAlign.Right,
+                    IsAntialias = true,
+                    Color = entry.TextColor,
+                    IsStroke = false
+                })
+                {
+                    var posX = leftPanelWidth;
+                    var posY = point.Y + bounds.Height / 2f;
+
+                    // draw outline
+                    if (entry.LabelStrokeWidth > 0f && entry.LabelStrokeColor != SKColor.Empty)
+                    {
+                        using (var strokePaint = new SKPaint
+                        {
+                            Style = SKPaintStyle.StrokeAndFill,
+                            StrokeWidth = entry.LabelStrokeWidth,
+                            TextSize = LabelTextSize,
+                            TextAlign = SKTextAlign.Right,
+                            FakeBoldText = true,
+                            IsAntialias = true,
+                            Color = entry.LabelStrokeColor,
+                            IsStroke = true
+                        })
+                            canvas.DrawText(entry.Label, posX, posY, strokePaint);
+                    }
+
+                    canvas.DrawText(entry.Label, posX, posY, paint);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw points to the canvas
         /// </summary>
         /// <param name="canvas"></param>
         /// <param name="points"></param>
@@ -252,26 +385,26 @@ namespace Microcharts
         }
 
         /// <summary>
-        /// 
+        /// Draw points background areas (vertical)
         /// </summary>
         /// <param name="canvas"></param>
         /// <param name="points"></param>
-        /// <param name="origin"></param>
-        protected void DrawPointAreas(SKCanvas canvas, SKPoint[] points, float origin)
+        /// <param name="yOrigin"></param>
+        protected void DrawPointAreasVertical(SKCanvas canvas, SKPoint[] points, float yOrigin)
         {
             if (points.Length == 0 || PointAreaAlpha == 0)
             {
                 return;
             }
 
-            for (int i = 0; i < points.Length; i++)
+            for (var i = 0; i < points.Length; i++)
             {
                 var entry = Entries[i];
                 ref var point = ref points[i];
-                var y = Math.Min(origin, point.Y);
+                var y = Math.Min(yOrigin, point.Y);
 
                 using (var shader = SKShader.CreateLinearGradient(
-                    new SKPoint(0, origin),
+                    new SKPoint(0, yOrigin),
                     new SKPoint(0, point.Y),
                     new[]
                     {
@@ -287,20 +420,62 @@ namespace Microcharts
                 })
                 {
                     paint.Shader = shader;
-                    var height = Math.Max(2, Math.Abs(origin - point.Y));
+                    var height = Math.Max(2, Math.Abs(yOrigin - point.Y));
                     canvas.DrawRect(SKRect.Create(point.X - (PointSize / 2), y, PointSize, height), paint);
                 }
             }
         }
 
         /// <summary>
-        /// Draw value labels
+        /// Draw points background areas (horizontal)
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="points"></param>
+        /// <param name="xOrigin"></param>
+        protected void DrawPointAreasHorizontal(SKCanvas canvas, SKPoint[] points, float xOrigin)
+        {
+            if (points.Length == 0 || PointAreaAlpha == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                var entry = Entries[i];
+                ref var point = ref points[i];
+                var x = Math.Min(xOrigin, point.X);
+
+                using (var shader = SKShader.CreateLinearGradient(
+                    new SKPoint(0, xOrigin),
+                    new SKPoint(0, point.X),
+                    new[]
+                    {
+                            entry.Color.WithAlpha(PointAreaAlpha),
+                            entry.Color.WithAlpha((byte)(PointAreaAlpha / 3))
+                    },
+                    null,
+                    SKShaderTileMode.Clamp))
+                using (var paint = new SKPaint
+                {
+                    Style = SKPaintStyle.Fill,
+                    Color = entry.Color.WithAlpha(PointAreaAlpha),
+                })
+                {
+                    paint.Shader = shader;
+                    var width = Math.Max(2f, Math.Abs(xOrigin - point.X));
+                    canvas.DrawRect(SKRect.Create(x, point.Y - (PointSize / 2f), width, PointSize), paint);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw value labels (vertical)
         /// </summary>
         /// <param name="canvas"></param>
         /// <param name="points"></param>
         /// <param name="itemSize"></param>
         /// <param name="valueLabelSizes"></param>
-        protected void DrawValueLabels(SKCanvas canvas, SKPoint[] points, SKSize itemSize, SKRect[] valueLabelSizes)
+        protected void DrawValueLabelsVertical(SKCanvas canvas, SKPoint[] points, SKSize itemSize, SKRect[] valueLabelSizes)
         {
             if (points.Length == 0)
             {
@@ -330,7 +505,7 @@ namespace Microcharts
                 })
                 {
                     var posX = point.X;
-                    var posY = IsValueLabelNearValuePoints ? point.Y - 20f : Margin;
+                    var posY = IsValueLabelNearValuePoints ? point.Y - PointSize : Margin;
 
                     // draw outline
                     if (entry.ValueStrokeWidth > 0f && entry.ValueStrokeColor != SKColor.Empty)
@@ -341,6 +516,75 @@ namespace Microcharts
                             StrokeWidth = entry.ValueStrokeWidth,
                             TextSize = LabelTextSize,
                             TextAlign = SKTextAlign.Center,
+                            FakeBoldText = true,
+                            IsAntialias = true,
+                            Color = entry.ValueStrokeColor,
+                            IsStroke = true
+                        })
+                            canvas.DrawText(entry.ValueLabel, posX, posY, strokePaint);
+                    }
+
+                    canvas.DrawText(entry.ValueLabel, posX, posY, paint);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw value labels (horizontal)
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="points"></param>
+        /// <param name="itemSize"></param>
+        /// <param name="valueLabelSizes"></param>
+        /// <param name="width"></param>
+        /// <param name="rightPanelWidth"></param>
+        protected void DrawValueLabelsHorizontal(
+            SKCanvas canvas, 
+            SKPoint[] points, 
+            SKSize itemSize, 
+            SKRect[] valueLabelSizes, 
+            int width,
+            float rightPanelWidth)
+        {
+            if (points.Length == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                var entry = Entries[i];
+                ref var point = ref points[i];
+
+                ref var bounds = ref valueLabelSizes[i];
+                if (bounds == SKRect.Empty)
+                {
+                    continue;
+                }
+
+                using (new SKAutoCanvasRestore(canvas))
+                using (var paint = new SKPaint
+                {
+                    TextSize = LabelTextSize,
+                    TextAlign = SKTextAlign.Left,
+                    FakeBoldText = false,
+                    IsAntialias = true,
+                    Color = entry.Color,
+                    IsStroke = false
+                })
+                {
+                    var posX = IsValueLabelNearValuePoints ? point.X + PointSize + PointSize : width - rightPanelWidth + Margin;
+                    var posY = point.Y + bounds.Height / 2f;
+
+                    // draw outline
+                    if (entry.ValueStrokeWidth > 0f && entry.ValueStrokeColor != SKColor.Empty)
+                    {
+                        using (var strokePaint = new SKPaint
+                        {
+                            Style = SKPaintStyle.StrokeAndFill,
+                            StrokeWidth = entry.ValueStrokeWidth,
+                            TextSize = LabelTextSize,
+                            TextAlign = SKTextAlign.Left,
                             FakeBoldText = true,
                             IsAntialias = true,
                             Color = entry.ValueStrokeColor,
@@ -376,7 +620,16 @@ namespace Microcharts
         /// <returns></returns>
         protected float CalculateLeftPanelWidth(SKRect[] labelSizes)
         {
-            return labelSizes.Max(x => x.Width) + Margin * 2f;
+            return labelSizes.Max(x => x.Width) + Margin + Margin;
+        }
+
+        /// <summary>
+        /// Calculate chart right panel width
+        /// </summary>
+        /// <returns></returns>
+        protected float CalculateRightPanelWidth(SKRect[] valueLabelSizes)
+        {
+            return valueLabelSizes.Max(x => x.Width) + Margin + Margin;
         }
 
         /// <summary>
