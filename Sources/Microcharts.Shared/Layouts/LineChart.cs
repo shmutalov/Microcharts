@@ -21,6 +21,7 @@ namespace Microcharts
         public LineChart()
         {
             PointSize = 10;
+            OriginWidth = 0f;
         }
 
         #endregion

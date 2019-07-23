@@ -11,25 +11,25 @@ namespace ChartGenerationTest
         {
             var entries = new[]
             {
-                new Entry(-212)
+                new Entry(212)
                 {
                     Label = "UWP",
                     ValueLabel = "212",
                     Color = SKColor.Parse("#2c3e50"),
                 },
-                new Entry(248)
+                new Entry(-248)
                 {
                     Label = "Android",
                     ValueLabel = "248",
                     Color = SKColor.Parse("#77d065")
                 },
-                new Entry(128)
+                new Entry(-128)
                 {
                     Label = "iOS",
                     ValueLabel = "128",
                     Color = SKColor.Parse("#b455b6")
                 },
-                new Entry(-514)
+                new Entry(514)
                 {
                     Label = "Shared",
                     ValueLabel = "514",
@@ -37,12 +37,12 @@ namespace ChartGenerationTest
                 }
             };
 
-            var chart = new PointChart
+            var chart = new LineChart
             {
                 Entries = entries,
                 IsValueLabelNearValuePoints = true,
-                Orientation = ChartOrientation.Horizontal,
-                BackgroundColor = SKColors.White
+                Orientation = ChartOrientation.Vertical,
+                BackgroundColor = SKColors.White,
                 //HoleRadius = 0.5f,
             };
 

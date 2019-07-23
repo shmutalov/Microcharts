@@ -46,6 +46,16 @@ namespace Microcharts
         /// </summary>
         public ChartOrientation Orientation { get; set; } = ChartOrientation.Vertical;
 
+        /// <summary>
+        /// Color of the origin line
+        /// </summary>
+        public SKColor OriginColor { get; set; } = SKColors.LightGray;
+
+        /// <summary>
+        /// Origin line width
+        /// </summary>
+        public float OriginWidth { get; set; } = 2f;
+
         #endregion
 
         #region Methods
@@ -108,7 +118,15 @@ namespace Microcharts
             }
         }
 
-        private void DrawHorizontal(SKCanvas canvas, int width, int height, SKRect[] labelSizes, SKRect[] valueLabelSizes)
+        /// <summary>
+        /// Draw chart with horizontal orientation
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="labelSizes"></param>
+        /// <param name="valueLabelSizes"></param>
+        protected virtual void DrawHorizontal(SKCanvas canvas, int width, int height, SKRect[] labelSizes, SKRect[] valueLabelSizes)
         {
             var leftPanelWidth = CalculateLeftPanelWidth(labelSizes);
             var rigthPanelWidth = CalculateRightPanelWidth(valueLabelSizes);
@@ -117,6 +135,8 @@ namespace Microcharts
             var origin = CalculateXOrigin(itemSize.Width, leftPanelWidth);
             var points = CalculatePointPositionsHorizontal(itemSize, leftPanelWidth);
 
+            DrawOriginLineHorizontal(canvas, height, origin);
+
             DrawPointAreasHorizontal(canvas, points, origin);
             DrawPoints(canvas, points);
             DrawLeftPanel(canvas, points, itemSize, leftPanelWidth, labelSizes);
@@ -124,7 +144,15 @@ namespace Microcharts
             DrawValueLabelsHorizontal(canvas, points, itemSize, valueLabelSizes, width, rigthPanelWidth);
         }
 
-        private void DrawVertical(SKCanvas canvas, int width, int height, SKRect[] labelSizes, SKRect[] valueLabelSizes)
+        /// <summary>
+        /// Draw chart with vertical orientation
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="labelSizes"></param>
+        /// <param name="valueLabelSizes"></param>
+        protected virtual void DrawVertical(SKCanvas canvas, int width, int height, SKRect[] labelSizes, SKRect[] valueLabelSizes)
         {
             var footerHeight = CalculateFooterHeight();
             var headerHeight = CalculateHeaderHeight(valueLabelSizes);
@@ -132,11 +160,64 @@ namespace Microcharts
             var origin = CalculateYOrigin(itemSize.Height, headerHeight);
             var points = CalculatePointPositionsVertical(itemSize, headerHeight);
 
+            DrawOriginLineVertical(canvas, width, origin);
+
             DrawPointAreasVertical(canvas, points, origin);
             DrawPoints(canvas, points);
             DrawFooter(canvas, points, itemSize, height, footerHeight, labelSizes);
 
             DrawValueLabelsVertical(canvas, points, itemSize, valueLabelSizes);
+        }
+
+
+        /// <summary>
+        /// Draw origin line (horizontal)
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="height"></param>
+        /// <param name="xOrigin"></param>
+        protected virtual void DrawOriginLineHorizontal(SKCanvas canvas, float height, float xOrigin)
+        {
+            if (OriginWidth == 0f || OriginColor == SKColor.Empty)
+            {
+                return;
+            }
+
+            using (var paint = new SKPaint
+            {
+                Style = SKPaintStyle.Stroke,
+                Color = OriginColor,
+                StrokeWidth = OriginWidth,
+                IsAntialias = true,
+            })
+            {
+                canvas.DrawLine(xOrigin, Margin, xOrigin, height - Margin, paint);
+            }
+        }
+
+        /// <summary>
+        /// Draw origin line (vertical)
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="width"></param>
+        /// <param name="yOrigin"></param>
+        protected virtual void DrawOriginLineVertical(SKCanvas canvas, float width, float yOrigin)
+        {
+            if (OriginWidth == 0f || OriginColor == SKColor.Empty)
+            {
+                return;
+            }
+
+            using (var paint = new SKPaint
+            {
+                Style = SKPaintStyle.Stroke,
+                Color = OriginColor,
+                StrokeWidth = OriginWidth,
+                IsAntialias = true,
+            })
+            {
+                canvas.DrawLine(Margin, yOrigin, width - Margin, yOrigin, paint);
+            }
         }
 
         /// <summary>
@@ -166,7 +247,7 @@ namespace Microcharts
         {
             var w = width - leftPanelWidth - rightPanelWidth;
             var h = (height - ((Entries.Count + 1) * Margin)) / Entries.Count;
-            
+
             return new SKSize(w, h);
         }
 
@@ -544,10 +625,10 @@ namespace Microcharts
         /// <param name="width"></param>
         /// <param name="rightPanelWidth"></param>
         protected void DrawValueLabelsHorizontal(
-            SKCanvas canvas, 
-            SKPoint[] points, 
-            SKSize itemSize, 
-            SKRect[] valueLabelSizes, 
+            SKCanvas canvas,
+            SKPoint[] points,
+            SKSize itemSize,
+            SKRect[] valueLabelSizes,
             int width,
             float rightPanelWidth)
         {

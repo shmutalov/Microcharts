@@ -74,7 +74,7 @@ namespace Microcharts
         /// Gets or sets the outline color of the text (for the caption label).
         /// </summary>
         /// <value>The outline color of the text.</value>
-        public SKColor LabelStrokeColor { get; set; } = SKColors.Empty;
+        public SKColor LabelStrokeColor { get; set; } = SKColor.Empty;
 
         /// <summary>
         /// Gets or sets the outline width of the text (for the caption label).
