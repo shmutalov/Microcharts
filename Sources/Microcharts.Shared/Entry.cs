@@ -86,7 +86,7 @@ namespace Microcharts
         /// Gets or sets the outline color of the text (for the value).
         /// </summary>
         /// <value>The outline color of the text.</value>
-        public SKColor ValueStrokeColor { get; set; } = SKColors.Empty;
+        public SKColor ValueStrokeColor { get; set; } = SKColors.White;
 
         /// <summary>
         /// Gets or sets the outline width of the text (for the value).

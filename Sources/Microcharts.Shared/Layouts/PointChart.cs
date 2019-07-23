@@ -79,12 +79,17 @@ namespace Microcharts
         /// <returns></returns>
         public float CalculateXOrigin(float itemWidth, float leftPanelWidth)
         {
-            if (MaxValue <= 0)
+            if (MinValue > 0)
             {
-                return leftPanelWidth + itemWidth;
+                return leftPanelWidth + PointSize;
             }
 
-            return leftPanelWidth + Margin;
+            if (MaxValue <= 0)
+            {
+                return leftPanelWidth + PointSize + itemWidth;
+            }
+
+            return leftPanelWidth + PointSize + ((1f - MaxValue / ValueRange) * itemWidth);
         }
 
         /// <inheritdoc />
@@ -109,7 +114,7 @@ namespace Microcharts
             var rigthPanelWidth = CalculateRightPanelWidth(valueLabelSizes);
 
             var itemSize = CalculateItemSizeHorizontal(width, height, leftPanelWidth, rigthPanelWidth);
-            var origin = CalculateXOrigin(itemSize.Height, leftPanelWidth);
+            var origin = CalculateXOrigin(itemSize.Width, leftPanelWidth);
             var points = CalculatePointPositionsHorizontal(itemSize, leftPanelWidth);
 
             DrawPointAreasHorizontal(canvas, points, origin);
@@ -207,7 +212,7 @@ namespace Microcharts
                 var entry = Entries[i];
 
                 var y = halfBodyHeightPlusMargin + (i * bodyHeightPlusMargin);
-                var x = leftPanelWidth + (((entry.Value - MinValue) / ValueRange) * itemSize.Width);
+                var x = leftPanelWidth + PointSize + (((entry.Value - MinValue) / ValueRange) * itemSize.Width);
 
                 result[i] = new SKPoint(x, y);
             }
@@ -573,7 +578,7 @@ namespace Microcharts
                     IsStroke = false
                 })
                 {
-                    var posX = IsValueLabelNearValuePoints ? point.X + PointSize + PointSize : width - rightPanelWidth + Margin;
+                    var posX = IsValueLabelNearValuePoints ? point.X + PointSize : width - rightPanelWidth + Margin;
                     var posY = point.Y + bounds.Height / 2f;
 
                     // draw outline

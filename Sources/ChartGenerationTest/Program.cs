@@ -11,7 +11,7 @@ namespace ChartGenerationTest
         {
             var entries = new[]
             {
-                new Entry(212)
+                new Entry(-212)
                 {
                     Label = "UWP",
                     ValueLabel = "212",
@@ -29,7 +29,7 @@ namespace ChartGenerationTest
                     ValueLabel = "128",
                     Color = SKColor.Parse("#b455b6")
                 },
-                new Entry(514)
+                new Entry(-514)
                 {
                     Label = "Shared",
                     ValueLabel = "514",
@@ -37,11 +37,11 @@ namespace ChartGenerationTest
                 }
             };
 
-            var chart = new BarChart
+            var chart = new PointChart
             {
                 Entries = entries,
                 IsValueLabelNearValuePoints = true,
-                Orientation = ChartOrientation.Vertical,
+                Orientation = ChartOrientation.Horizontal,
                 BackgroundColor = SKColors.White
                 //HoleRadius = 0.5f,
             };
